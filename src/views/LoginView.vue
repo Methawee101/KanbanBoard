@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <form>
+    <form @submit.prevent="handleLogin()">
       <h2>Login</h2>
       <div class="input-group">
         <label>email</label>
@@ -10,22 +10,47 @@
         <label>password</label>
         <input type="password" require v-model="password" />
       </div>
-      <button type="submit">Register</button>
+      <button type="submit">Login</button>
     </form>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, ref } from "vue";
+import { useRouter } from "vue-router";
 
 export default defineComponent({
-  components: {},
-  data() {
+  name: "LoginView",
+  setup() {
+    const email = ref("");
+    const password = ref("");
+
+    const router = useRouter();
+
+    const handleLogin = () => {
+      const stored = localStorage.getItem("users");
+      const users = stored ? JSON.parse(stored) : [];
+
+      const userStoraged = users.find(
+        (u: { email: string; password: string }) =>
+          u.email.toLowerCase() === email.value.toLowerCase() ||
+          u.password === password.value
+      );
+      if (userStoraged) {
+        alert("Login Sucessfull");
+        setTimeout(() => {
+          router.push("/board");
+        }, 1000);
+        return;
+      }
+
+      email.value = "";
+      password.value = "";
+    };
     return {
-      username: "" as string,
-      email: "" as string,
-      password: "" as string,
-      confirmpassword: "" as string,
+      email,
+      password,
+      handleLogin,
     };
   },
 });
@@ -61,6 +86,9 @@ button {
   border: none;
   margin-top: 5%;
   cursor: pointer;
+}
+button :hover {
+  background-color: #d26161;
 }
 .input-group {
   display: flex;

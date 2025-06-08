@@ -1,10 +1,10 @@
 <template>
   <div class="container">
-    <form>
+    <form @submit.prevent="handleRegister()">
       <h2>Register</h2>
       <div class="input-group">
         <label>name</label>
-        <input type="text" require v-model="username" />
+        <input type="text" require v-model="name" />
       </div>
       <div class="input-group">
         <label>email</label>
@@ -16,7 +16,7 @@
       </div>
       <div class="input-group">
         <label>Confirm Password</label>
-        <input type="password" require v-model="confirmpassword" />
+        <input type="password" require v-model="confirmPassword" />
       </div>
       <button type="submit">Register</button>
     </form>
@@ -24,16 +24,75 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, ref } from "vue";
+import { useRouter } from "vue-router";
 
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  password: string;
+}
 export default defineComponent({
-  components: {},
-  data() {
+  name: "RegisterView",
+  setup() {
+    const name = ref("");
+    const email = ref("");
+    const password = ref("");
+    const confirmPassword = ref("");
+
+    const router = useRouter();
+
+    const generateId = (): string => {
+      return Date.now().toString();
+    };
+    const handleRegister = () => {
+      if (password.value !== confirmPassword.value) {
+        alert("Passwords do not match");
+        return;
+      }
+
+      const stored = localStorage.getItem("users");
+      const users: User[] = stored ? JSON.parse(stored) : [];
+
+      const exists = users.find(
+        (u) => u.email.toLowerCase() === email.value.toLowerCase()
+      );
+
+      if (exists) {
+        alert("Email already registered.");
+        return;
+      }
+
+      const newUser: User = {
+        id: generateId(),
+        name: name.value,
+        email: email.value,
+        password: password.value,
+      };
+
+      users.push(newUser);
+      localStorage.setItem("users", JSON.stringify(users));
+
+      alert("Register successful! You can now login.");
+
+      name.value = "";
+      email.value = "";
+      password.value = "";
+      confirmPassword.value = "";
+
+      setTimeout(() => {
+        router.push("/login");
+      }, 2000);
+      console.log(users);
+    };
+
     return {
-      username: "" as string,
-      email: "" as string,
-      password: "" as string,
-      confirmpassword: "" as string,
+      name,
+      email,
+      password,
+      confirmPassword,
+      handleRegister,
     };
   },
 });
@@ -69,6 +128,9 @@ button {
   border: none;
   margin-top: 3%;
   cursor: pointer;
+}
+button :hover {
+  background-color: #d26161;
 }
 .input-group {
   display: flex;

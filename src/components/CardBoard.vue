@@ -1,14 +1,11 @@
 <template>
   <v-card class="card">
-    <v-card-text class="texttitle"> ppp </v-card-text>
+    <v-card-text class="texttitle"> {{ title }} </v-card-text>
     <div>
-      <p>X</p>
+      <p @click="deleteCard">X</p>
     </div>
     <v-card-text class="content">
-      Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestias eaque
-      distinctio voluptatem labore voluptatibus! Explicabo consequatur vel,
-      assumenda exercitationem quibusdam alias repellat id, aspernatur eius ad
-      nihil qui veniam cumque!
+      {{ content }}
     </v-card-text>
   </v-card>
 </template>
@@ -18,11 +15,26 @@ import { defineComponent } from "vue";
 
 export default defineComponent({
   name: "CardBoard",
-  data() {
-    return {
-      title: "PT" as string,
-      content: "" as string,
+  props: {
+    id: {
+      type: String as () => string,
+      required: true,
+    },
+    title: {
+      type: String as () => string,
+      required: true,
+    },
+    content: {
+      type: String as () => string,
+      required: true,
+    },
+  },
+  emits: ["delete"],
+  setup(props, { emit }) {
+    const deleteCard = () => {
+      emit("delete", props.id);
     };
+    return { deleteCard };
   },
 });
 </script>
