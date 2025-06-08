@@ -1,11 +1,7 @@
 <template>
   <div class="container">
     <form>
-      <h2>Register</h2>
-      <div class="input-group">
-        <label>name</label>
-        <input type="text" require v-model="username" />
-      </div>
+      <h2>Login</h2>
       <div class="input-group">
         <label>email</label>
         <input type="email" require v-model="email" />
@@ -13,10 +9,6 @@
       <div class="input-group">
         <label>password</label>
         <input type="password" require v-model="password" />
-      </div>
-      <div class="input-group">
-        <label>Confirm Password</label>
-        <input type="password" require v-model="confirmpassword" />
       </div>
       <button type="submit">Register</button>
     </form>
@@ -49,12 +41,12 @@ export default defineComponent({
 form {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 20px;
   background-color: white;
   color: black;
   border-radius: 20px;
-  width: 50%;
-  height: 75%;
+  width: 40%;
+  height: 50%;
   justify-content: center;
   align-items: center;
   font-size: 20px;
@@ -67,7 +59,7 @@ button {
   color: white;
   font-size: 20px;
   border: none;
-  margin-top: 3%;
+  margin-top: 5%;
   cursor: pointer;
 }
 .input-group {
@@ -75,8 +67,8 @@ button {
   flex-direction: column;
   align-items: start;
   width: 80%;
-  margin-top: 25px;
-  gap: 3px;
+  margin-top: 10px;
+  gap: 5px;
   align-items: center;
 }
 input {
