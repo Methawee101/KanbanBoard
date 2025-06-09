@@ -62,6 +62,7 @@ export default defineComponent({
   height: 100vh;
   justify-content: center;
   align-items: center;
+  background-color: #d9d9d9;
 }
 form {
   display: flex;

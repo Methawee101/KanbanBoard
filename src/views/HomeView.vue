@@ -41,6 +41,7 @@ export default defineComponent({
   display: flex;
   justify-content: center;
   align-items: center;
+  background-color: #d9d9d9;
 }
 
 .button-group {

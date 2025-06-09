@@ -4,103 +4,101 @@
       <p class="close-button" @click="close">X</p>
       <form @submit.prevent="handleSubmit">
         <div class="input-group">
-          <label>Title</label>
-          <textarea v-model="title" id=""></textarea>
+          <label>email</label>
+          <textarea v-model="email"></textarea>
         </div>
-        <div class="input-group">
-          <label>content</label>
-          <textarea v-model="content"></textarea>
-        </div>
-        <button type="submit" class="btn-submit">{{ props.buttonText }}</button>
+        <button type="submit" class="btn-submit">Add</button>
       </form>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, watch, PropType } from "vue";
+import { defineComponent, ref } from "vue";
 
 interface Member {
   id: string;
   email: string;
 }
-interface Card {
+
+interface User {
   id: string;
-  title: string;
-  content: string;
+  name: string;
+  email: string;
   members: Member[];
 }
 
-const generateId = (): string => {
-  return Date.now().toString();
-};
-
 export default defineComponent({
+  name: "ModalUser",
+  emits: ["close"],
   props: {
-    mode: {
-      type: String as PropType<"add" | "edit">,
-      default: "add",
-    },
-    buttonText: {
-      type: String,
-      default: "Add",
-    },
-    cardData: {
-      type: Object as PropType<Partial<Card>>,
-      default: () => ({ id: "", title: "", content: "", members: [] }),
-    },
+    cardId: { type: String, required: true },
   },
-
-  name: "ModalCard",
-  emits: ["close", "add", "edit"],
   setup(props, { emit }) {
-    const title = ref(props.cardData.title || "");
-    const content = ref(props.cardData.content || "");
-
-    watch(
-      () => props.cardData,
-      (newData) => {
-        title.value = newData.title || "";
-        content.value = newData.content || "";
-      },
-      { immediate: true, deep: true }
-    );
+    const email = ref("");
 
     const handleSubmit = () => {
-      if (!title.value.trim() || !content.value.trim()) {
-        alert("Plz add Title and Content");
+      if (!email.value.trim()) {
+        alert("Plz enter Email");
         return;
       }
-      const newCard: Card = {
-        id: props.cardData.id || generateId(),
-        title: title.value,
-        content: content.value,
-        members: props.cardData.members || [],
-      };
-      console.log("Emitting new card:", newCard);
+      const storedUsers = localStorage.getItem("users");
+      const users: User[] = storedUsers ? JSON.parse(storedUsers) : [];
 
-      if (props.mode === "edit") {
-        emit("edit", newCard);
-      } else {
-        emit("add", newCard);
+      const storedCards = localStorage.getItem("cards");
+      const cards = storedCards ? JSON.parse(storedCards) : [];
+
+      const cardIndex = cards.findIndex(
+        (card: any) => card.id === props.cardId
+      );
+      if (cardIndex === -1) {
+        alert("Card not found.");
+        return;
       }
 
-      title.value = "";
-      content.value = "";
+      const Userstored = users.find(
+        (user) => user.email.toLowerCase() === email.value.trim().toLowerCase()
+      );
+      if (!Userstored) {
+        alert("User not found.");
+        return;
+      }
+
+      const card = cards[cardIndex];
+      if (!Array.isArray(card.members)) {
+        card.members = [];
+      }
+
+      const alreadyInCard = card.members.some(
+        (member: Member) => member.email === Userstored.email
+      );
+
+      if (alreadyInCard) {
+        alert("Member is already in this card.");
+        return;
+      }
+
+      card.members.push({
+        id: Userstored.id,
+        email: Userstored.email,
+      });
+
+      localStorage.setItem("cards", JSON.stringify(cards));
+
+      alert("Member added!");
+      email.value = "";
       emit("close");
     };
     return {
-      title,
-      content,
       handleSubmit,
-      props,
+      email,
       close: () => emit("close"),
     };
   },
 });
 </script>
 
-<style scoped>
+<style>
 .modal-container {
   position: fixed;
   top: 0;
